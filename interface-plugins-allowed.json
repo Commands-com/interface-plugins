@@ -1,0 +1,8 @@
+{
+  "allowed": [
+    {
+      "name": "webhook-echo",
+      "sha256": "35a0871951c8684cc4bbe72be551898c096f8b2e28cd8bdd6d512cecb47d3d58"
+    }
+  ]
+}

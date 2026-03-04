@@ -1,0 +1,43 @@
+{
+  "id": "webhook_echo",
+  "name": "Webhook Echo",
+  "version": "1.0.0",
+  "apiVersion": "1",
+  "interfaceType": "webhook_echo",
+  "description": "Minimal external interface provider template",
+  "routeDefaults": {
+    "tokenAuthMode": "path",
+    "deadlineMs": 2500,
+    "maxBodyBytes": 1048576,
+    "tokenMaxAgeDays": 90
+  },
+  "createForm": {
+    "secrets": [],
+    "config": [
+      {
+        "key": "responseText",
+        "label": "Default Response Text",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "updateForm": {
+    "secrets": [],
+    "config": [
+      {
+        "key": "responseText",
+        "label": "Default Response Text",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "clear_cache",
+      "label": "Clear Cache",
+      "confirmText": "Reset in-memory counters for this interface provider?"
+    }
+  ]
+}
