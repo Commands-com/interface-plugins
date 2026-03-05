@@ -9,8 +9,17 @@ async function collectPluginFiles(dirPath, relativePath = '') {
   const files = [];
 
   for (const entry of entries) {
-    if (entry.name === '.DS_Store') continue;
-    if (entry.name === '.git') continue;
+    if (entry.name === '.DS_Store' || entry.name === '.git') {
+      // Still reject symlinks for excluded names — a symlink named .git
+      // could point outside the plugin root and bypass integrity checks.
+      const excludedPath = path.join(dirPath, entry.name);
+      const excludedStat = await fs.lstat(excludedPath);
+      if (excludedStat.isSymbolicLink()) {
+        const relPath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+        throw new Error(`Symlink not allowed while hashing: ${relPath}`);
+      }
+      continue;
+    }
 
     const fullPath = path.join(dirPath, entry.name);
     const relPath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
