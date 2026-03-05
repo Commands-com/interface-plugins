@@ -89,12 +89,6 @@ In Desktop UI this maps to Developer settings `Dev Mode` + `Trust All Plugins`.
 
 Custom plugins send `manifest.interfaceType` to gateway as `interface_type` when creating routes.
 
-If your gateway still only allows Slack, you will see errors like:
-
-- `interface_type must be 'slack'`
-
-That means the gateway is older than the custom-interface-type update.
-
 ## Full Docs
 
 - [Getting Started](./GETTING_STARTED.md)

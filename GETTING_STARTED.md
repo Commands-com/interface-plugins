@@ -105,8 +105,6 @@ Minimum checklist:
 
 ## 9. Common Failure Modes
 
-- `interface_type must be 'slack'`:
-  - Gateway does not yet accept custom interface types.
 - Provider missing in dropdown:
   - manifest invalid, allowlist missing/hash mismatch, or plugin load collision.
 - Provider shows `provider unavailable`:

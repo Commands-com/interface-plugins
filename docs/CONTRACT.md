@@ -366,12 +366,6 @@ Current Interfaces tab behavior:
 
 Gateway create call uses `manifest.interfaceType` as `interface_type`.
 
-If gateway rejects custom interface types with:
-
-- `interface_type must be 'slack'`
-
-then gateway is running an older schema.
-
 Route override keys are passed through to gateway as-is.
 
 Use gateway field names (snake_case), for example:
@@ -409,5 +403,3 @@ Desktop does not fully validate arbitrary override keys.
   - plugin threw before `sendResponse`
 - Action button fails:
   - `runAction` missing or returns error
-- Create fails with custom type error:
-  - gateway needs custom `interface_type` support
