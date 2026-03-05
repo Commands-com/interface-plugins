@@ -1,104 +1,101 @@
-# Commands.com Agent Interfaces
+# Commands.com Interface Plugins
 
-External interface provider plugins for Commands.com Desktop.
+Build external interface providers (Slack-style webhook integrations) for Commands Desktop.
 
-This repo is for integrations like Slack-style webhook interfaces that run locally and are loaded by the desktop app.
+This repo is for desktop app users, including DMG installs. You do not need access to the `Commands.app` source repo to build and ship your own interface plugin.
 
-## Important behavior
+## What You Get
 
-- Built-in interface providers (including built-in Slack) still load.
-- External providers are additive.
-- External providers cannot override reserved types (`slack`, `internal`, `test`).
+- `interface-plugins/webhook-echo`: reference implementation you can copy
+- `scripts/install-interface-plugins.sh`: install plugins into the desktop plugin directory
+- `scripts/generate-interface-allowlist.mjs`: generate allowlist with SHA-256 integrity pins
+- `scripts/compute-interface-plugin-sha256.mjs`: compute a single plugin hash
+- `docs/CONTRACT.md`: full manifest, loader, lifecycle, and hook contract
+- `GETTING_STARTED.md`: end-to-end authoring and testing workflow
 
-## Repo layout
-
-```text
-commands-com-agent-interfaces/
-  interface-plugins/
-    webhook-echo/
-      manifest.json
-      index.js
-  scripts/
-    install-interface-plugins.sh
-    compute-interface-plugin-sha256.mjs
-    generate-interface-allowlist.mjs
-  docs/
-    CONTRACT.md
-  interface-plugins-allowed.json.example
-  README.md
-  GETTING_STARTED.md
-```
-
-## Quick install (recommended)
+## Install Into Commands Desktop
 
 ```bash
-cd /Users/dtannen/Code/commands-com-agent-interfaces
+git clone https://github.com/Commands-com/interface-plugins.git
+cd interface-plugins
 ./scripts/install-interface-plugins.sh
 ```
 
-This installs plugins to:
+Install script output locations:
 
 - `~/.commands-agent/interface-plugins`
 - `~/.commands-agent/interface-plugins-allowed.json`
 
 Then restart Commands Desktop.
 
-## Manual install
+## Verify The Reference Plugin
+
+In the app:
+
+1. Open an agent.
+2. Open the `Interfaces` tab.
+3. In the provider dropdown, select `Webhook Echo`.
+4. Click `Add Interface`.
+5. Click `Copy Webhook URL`.
+
+Send a test request:
 
 ```bash
-mkdir -p ~/.commands-agent/interface-plugins
-rsync -a --delete --exclude '.DS_Store' --exclude '.git/' \
-  ./interface-plugins/ ~/.commands-agent/interface-plugins/
-node ./scripts/generate-interface-allowlist.mjs \
-  ~/.commands-agent/interface-plugins \
-  ~/.commands-agent/interface-plugins-allowed.json
+curl -i -X POST "<webhook_url>" \
+  -H "content-type: application/json" \
+  -d '{"hello":"world"}'
 ```
 
-## Use repo path directly (optional)
+Expected behavior: HTTP 200 with JSON that includes request metadata and a running `requestCount`.
 
-You can point the app to this repo directly:
+## Build Your Own Interface Provider
+
+1. Copy the sample plugin.
 
 ```bash
-export COMMANDS_AGENT_INTERFACE_PLUGINS_DIR=/Users/dtannen/Code/commands-com-agent-interfaces/interface-plugins
+cp -R ./interface-plugins/webhook-echo ./interface-plugins/my-interface
 ```
 
-If you do this, put allowlist at:
+2. Update:
 
-- `/Users/dtannen/Code/commands-com-agent-interfaces/interface-plugins-allowed.json`
+- `./interface-plugins/my-interface/manifest.json`
+- `./interface-plugins/my-interface/index.js`
 
-## Security model
-
-- Default secure mode: allowlist + optional integrity hash pin per plugin.
-- Dev bypass exists but should not be used in production:
+3. Reinstall and regenerate allowlist:
 
 ```bash
-COMMANDS_AGENT_DEV=1
-COMMANDS_AGENT_TRUST_ALL_INTERFACE_PLUGINS=1
+./scripts/install-interface-plugins.sh
 ```
 
-## Add a new plugin
+4. Restart Commands Desktop.
 
-1. Copy `interface-plugins/webhook-echo` to a new folder.
-2. Update `manifest.json` with a unique `id` and `interfaceType`.
-3. Implement plugin hooks in `index.js`.
-4. Regenerate allowlist with hashes:
+## Security And Loading Model
 
-```bash
-node ./scripts/generate-interface-allowlist.mjs \
-  ~/.commands-agent/interface-plugins \
-  ~/.commands-agent/interface-plugins-allowed.json
-```
+- Built-in providers (including built-in `Slack`) still load.
+- External providers are additive.
+- External plugins cannot use reserved `interfaceType` values: `slack`, `internal`, `test`.
+- Plugin directory names must be allowlisted.
+- If an allowlist entry includes `sha256`, integrity is enforced at load time.
+- `manifest.json` and `index.js` must be regular files (no symlinks).
 
-## Contract
+Dev-only bypass exists:
 
-See [`docs/CONTRACT.md`](./docs/CONTRACT.md).
+- `COMMANDS_AGENT_DEV=1`
+- `COMMANDS_AGENT_TRUST_ALL_INTERFACE_PLUGINS=1`
 
-## Troubleshooting
+In Desktop UI this maps to Developer settings `Dev Mode` + `Trust All Plugins`.
 
-- Provider not visible:
-  - Check `manifest.json` schema and `interfaceType` uniqueness.
-  - Check allowlist file path and plugin directory names.
-- Provider shows unavailable:
-  - `providerApiVersion` in existing records may mismatch the plugin `apiVersion`.
-- Hash mismatch:
-  - Regenerate allowlist after any plugin file change.
+## Gateway Requirement For Custom Interface Types
+
+Custom plugins send `manifest.interfaceType` to gateway as `interface_type` when creating routes.
+
+If your gateway still only allows Slack, you will see errors like:
+
+- `interface_type must be 'slack'`
+
+That means the gateway is older than the custom-interface-type update.
+
+## Full Docs
+
+- [Getting Started](./GETTING_STARTED.md)
+- [Interface Contract](./docs/CONTRACT.md)
