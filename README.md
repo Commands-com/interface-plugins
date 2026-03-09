@@ -1,19 +1,41 @@
+<div align="center">
+
 # Commands.com Interface Plugins
 
-Build external interface providers (Slack-style webhook integrations) for Commands Desktop.
+**Build webhook integrations for Commands Desktop. No source access required.**
 
-This repo is for desktop app users, including DMG installs. You do not need access to the `Commands.app` source repo to build and ship your own interface plugin.
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933.svg)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+[![Security](https://img.shields.io/badge/Integrity-SHA--256%20Allowlist-8B5CF6.svg)](#security-and-loading)
 
-## What You Get
+External interface providers (Slack-style webhook integrations) for Commands Desktop.
+Works with packaged DMG installs — no `Commands.app` source repo needed.
 
-- `interface-plugins/webhook-echo`: reference implementation you can copy
-- `scripts/install-interface-plugins.sh`: install plugins into the desktop plugin directory
-- `scripts/generate-interface-allowlist.mjs`: generate allowlist with SHA-256 integrity pins
-- `scripts/compute-interface-plugin-sha256.mjs`: compute a single plugin hash
-- `docs/CONTRACT.md`: full manifest, loader, lifecycle, and hook contract
-- `GETTING_STARTED.md`: end-to-end authoring and testing workflow
+```
+Webhook Source  ──>  Commands Gateway  ──>  Interface Plugin  ──>  Agent
+```
 
-## Install Into Commands Desktop
+</div>
+
+---
+
+## Highlights
+
+| | |
+|---|---|
+| **Zero dependencies** | Reference plugin uses only Node.js built-ins, no npm packages required |
+| **Form-driven UI** | Declare `createForm` and `updateForm` in manifest — Desktop renders the fields |
+| **SHA-256 integrity** | Allowlist with optional hash pins, symlink rejection, dev-only bypass |
+| **Copy-and-go** | Clone `webhook-echo`, edit manifest and handler, reinstall |
+| **Action buttons** | Define custom per-interface actions in the manifest |
+| **Gateway routing** | Custom `interfaceType` sent as `interface_type` when creating routes |
+
+## Requirements
+
+- Node.js 18+
+- Commands Desktop (DMG or dev build)
+
+## Quick Start
 
 ```bash
 git clone https://github.com/Commands-com/interface-plugins.git
@@ -21,75 +43,81 @@ cd interface-plugins
 ./scripts/install-interface-plugins.sh
 ```
 
-Install script output locations:
+Install locations:
 
-- `~/.commands-agent/interface-plugins`
-- `~/.commands-agent/interface-plugins-allowed.json`
+| Path | Contents |
+|---|---|
+| `~/.commands-agent/interface-plugins` | Plugin directories |
+| `~/.commands-agent/interface-plugins-allowed.json` | Generated allowlist with SHA-256 pins |
 
-Then restart Commands Desktop.
+Restart Commands Desktop.
 
-## Verify The Reference Plugin
+### Verify the Reference Plugin
 
-In the app:
-
-1. Open an agent.
-2. Open the `Interfaces` tab.
-3. In the provider dropdown, select `Webhook Echo`.
-4. Click `Add Interface`.
-5. Click `Copy Webhook URL`.
-
-Send a test request:
+1. Open an agent and go to the **Interfaces** tab.
+2. Select **Webhook Echo** from the provider dropdown.
+3. Set **Signing Secret** to `demo_secret` and click **Add Interface**.
+4. Click **Copy Webhook URL**.
 
 ```bash
 curl -i -X POST "<webhook_url>" \
+  -H "x-echo-secret: demo_secret" \
   -H "content-type: application/json" \
   -d '{"hello":"world"}'
 ```
 
-Expected behavior: HTTP 200 with JSON that includes request metadata and a running `requestCount`.
+Expected: HTTP 200 with JSON including request metadata and a running `requestCount`.
 
 ## Build Your Own Interface Provider
-
-1. Copy the sample plugin.
 
 ```bash
 cp -R ./interface-plugins/webhook-echo ./interface-plugins/my-interface
 ```
 
-2. Update:
+Update:
 
-- `./interface-plugins/my-interface/manifest.json`
-- `./interface-plugins/my-interface/index.js`
+- `manifest.json` — plugin metadata, `createForm`, `updateForm`, actions
+- `index.js` — provider hooks (`handleTunnelRequest`, `validateCreate`, etc.)
 
-3. Reinstall and regenerate allowlist:
+Reinstall and regenerate allowlist:
 
 ```bash
 ./scripts/install-interface-plugins.sh
 ```
 
-4. Restart Commands Desktop.
+Restart Commands Desktop. Your provider appears in the **Interfaces** tab.
 
-## Security And Loading Model
+## Security and Loading
 
-- Built-in providers (including built-in `Slack`) still load.
-- External providers are additive.
-- External plugins cannot use reserved `interfaceType` values: `slack`, `internal`, `test`.
-- Plugin directory names must be allowlisted.
-- If an allowlist entry includes `sha256`, integrity is enforced at load time.
-- `manifest.json` and `index.js` must be regular files (no symlinks).
+| Rule | Detail |
+|---|---|
+| Built-in providers | Always load (including built-in Slack) |
+| External providers | Additive — cannot override built-ins |
+| Reserved types | `slack`, `internal`, `test` are blocked for external plugins |
+| Allowlist | Plugin directory names must be listed |
+| Integrity | If allowlist entry includes `sha256`, enforced at load time |
+| File checks | `manifest.json` and `index.js` must be regular files (no symlinks) |
 
-Dev-only bypass exists:
+Dev-only bypass:
 
-- `COMMANDS_AGENT_DEV=1`
-- `COMMANDS_AGENT_TRUST_ALL_INTERFACE_PLUGINS=1`
+```bash
+COMMANDS_AGENT_DEV=1 COMMANDS_AGENT_TRUST_ALL_INTERFACE_PLUGINS=1
+```
 
-In Desktop UI this maps to Developer settings `Dev Mode` + `Trust All Plugins`.
+In Desktop: **Settings > Developer > Dev Mode + Trust All Plugins**.
 
-## Gateway Requirement For Custom Interface Types
+## Project Layout
 
-Custom plugins send `manifest.interfaceType` to gateway as `interface_type` when creating routes.
+```
+interface-plugins/webhook-echo    Reference implementation (copy to create new)
+scripts/install-interface-plugins.sh          Install + generate allowlist
+scripts/generate-interface-allowlist.mjs      Generate allowlist with SHA-256 pins
+scripts/compute-interface-plugin-sha256.mjs   Compute single plugin hash
+docs/CONTRACT.md                  Full manifest, loader, lifecycle, hook contract
+GETTING_STARTED.md                End-to-end authoring and testing workflow
+```
 
-## Full Docs
+## Additional Docs
 
 - [Getting Started](./GETTING_STARTED.md)
 - [Interface Contract](./docs/CONTRACT.md)

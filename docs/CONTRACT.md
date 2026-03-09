@@ -355,11 +355,13 @@ Rules:
 Current Interfaces tab behavior:
 
 - provider list comes from loaded provider manifests
-- create form uses `manifest.createForm` only
+- create form uses `manifest.createForm`
+- per-interface settings form uses `manifest.updateForm` when present
 - secret fields render as password inputs
 - config fields render as text inputs
 - `config[].type` is currently metadata only (no specialized control rendering)
-- `updateForm` is validated at load time but not currently rendered in UI
+- leaving an update secret field blank keeps the existing stored secret unchanged
+- interface settings updates are blocked while status is `provider_unavailable`
 - `manifest.actions` render as action buttons on each interface row
 
 ## 13. Gateway Coupling And Route Overrides
@@ -387,7 +389,7 @@ Desktop does not fully validate arbitrary override keys.
 6. Handle missing/rotated secrets defensively.
 7. Keep plugin logic deterministic and bounded by gateway deadlines.
 8. Regenerate allowlist after any plugin file change.
-9. Re-test create, webhook request, action, rotate token, delete.
+9. Re-test create, update settings, webhook request, action, rotate token, delete.
 
 ## 15. Troubleshooting
 
@@ -403,3 +405,5 @@ Desktop does not fully validate arbitrary override keys.
   - plugin threw before `sendResponse`
 - Action button fails:
   - `runAction` missing or returns error
+- Settings update fails:
+  - `validateUpdate`/`prepareUpdate` returned an error, or provider is unavailable

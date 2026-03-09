@@ -12,23 +12,47 @@
     "tokenMaxAgeDays": 90
   },
   "createForm": {
-    "secrets": [],
+    "secrets": [
+      {
+        "key": "signingSecret",
+        "label": "Signing Secret (x-echo-secret header)",
+        "required": true
+      }
+    ],
     "config": [
       {
         "key": "responseText",
         "label": "Default Response Text",
         "type": "string",
         "required": false
+      },
+      {
+        "key": "responseStatus",
+        "label": "Response Status Code (100-599)",
+        "type": "number",
+        "required": false
       }
     ]
   },
   "updateForm": {
-    "secrets": [],
+    "secrets": [
+      {
+        "key": "signingSecret",
+        "label": "Rotate Signing Secret (optional)",
+        "required": false
+      }
+    ],
     "config": [
       {
         "key": "responseText",
         "label": "Default Response Text",
         "type": "string",
+        "required": false
+      },
+      {
+        "key": "responseStatus",
+        "label": "Response Status Code (100-599)",
+        "type": "number",
         "required": false
       }
     ]
