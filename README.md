@@ -7,9 +7,10 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Security](https://img.shields.io/badge/Integrity-SHA--256%20Allowlist-8B5CF6.svg)](#security-and-loading)
+[![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](#quick-start)
 
 External interface providers (Slack-style webhook integrations) for Commands Desktop.
-Works with packaged DMG installs — no `Commands.app` source repo needed.
+Works with packaged installs — no source repo needed.
 
 ```
 Webhook Source  ──>  Commands Gateway  ──>  Interface Plugin  ──>  Agent
@@ -24,6 +25,7 @@ Webhook Source  ──>  Commands Gateway  ──>  Interface Plugin  ──>  A
 | | |
 |---|---|
 | **Zero dependencies** | Reference plugin uses only Node.js built-ins, no npm packages required |
+| **Cross-platform** | Bash installer for macOS/Linux, Node.js installer for Windows |
 | **Form-driven UI** | Declare `createForm` and `updateForm` in manifest — Desktop renders the fields |
 | **SHA-256 integrity** | Allowlist with optional hash pins, symlink rejection, dev-only bypass |
 | **Copy-and-go** | Clone `webhook-echo`, edit manifest and handler, reinstall |
@@ -33,22 +35,33 @@ Webhook Source  ──>  Commands Gateway  ──>  Interface Plugin  ──>  A
 ## Requirements
 
 - Node.js 18+
-- Commands Desktop (DMG or dev build)
+- Commands Desktop (DMG, installer, or dev build)
 
 ## Quick Start
 
 ```bash
 git clone https://github.com/Commands-com/interface-plugins.git
 cd interface-plugins
+```
+
+**macOS / Linux:**
+
+```bash
 ./scripts/install-interface-plugins.sh
 ```
 
-Install locations:
+**Windows (or any platform with Node.js):**
 
-| Path | Contents |
+```bash
+node scripts/install-interface-plugins.mjs
+```
+
+Both scripts copy plugins, install npm dependencies, and generate the SHA-256 allowlist.
+
+| Platform | Default install locations |
 |---|---|
-| `~/.commands-agent/interface-plugins` | Plugin directories |
-| `~/.commands-agent/interface-plugins-allowed.json` | Generated allowlist with SHA-256 pins |
+| macOS / Linux | `~/.commands-agent/interface-plugins` |
+| Windows | `%LOCALAPPDATA%\commands-agent\interface-plugins` |
 
 Restart Commands Desktop.
 
@@ -82,7 +95,8 @@ Update:
 Reinstall and regenerate allowlist:
 
 ```bash
-./scripts/install-interface-plugins.sh
+./scripts/install-interface-plugins.sh        # macOS/Linux
+node scripts/install-interface-plugins.mjs    # Windows (or any platform)
 ```
 
 Restart Commands Desktop. Your provider appears in the **Interfaces** tab.
@@ -109,12 +123,13 @@ In Desktop: **Settings > Developer > Dev Mode + Trust All Plugins**.
 ## Project Layout
 
 ```
-interface-plugins/webhook-echo    Reference implementation (copy to create new)
-scripts/install-interface-plugins.sh          Install + generate allowlist
-scripts/generate-interface-allowlist.mjs      Generate allowlist with SHA-256 pins
-scripts/compute-interface-plugin-sha256.mjs   Compute single plugin hash
-docs/CONTRACT.md                  Full manifest, loader, lifecycle, hook contract
-GETTING_STARTED.md                End-to-end authoring and testing workflow
+interface-plugins/webhook-echo                  Reference implementation (copy to create new)
+scripts/install-interface-plugins.sh            Bash installer (macOS/Linux)
+scripts/install-interface-plugins.mjs           Node.js installer (cross-platform)
+scripts/generate-interface-allowlist.mjs        Generate allowlist with SHA-256 pins
+scripts/compute-interface-plugin-sha256.mjs     Compute single plugin hash
+docs/CONTRACT.md                                Full manifest, loader, lifecycle, hook contract
+GETTING_STARTED.md                              End-to-end authoring and testing workflow
 ```
 
 ## Additional Docs
