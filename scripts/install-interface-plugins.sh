@@ -7,8 +7,8 @@ Usage: ./scripts/install-interface-plugins.sh [options]
 
 Options:
   --source <dir>          Source plugin directory (default: ./interface-plugins)
-  --dest <dir>            Destination plugin directory (default: ~/.commands-agent/interface-plugins)
-  --allowlist <file>      Allowlist output file (default: ~/.commands-agent/interface-plugins-allowed.json)
+  --dest <dir>            Destination plugin directory (default: ~/.commands-com/workspace/interface-plugins)
+  --allowlist <file>      Allowlist output file (default: ~/.commands-com/workspace/interface-plugins-allowed.json)
   --skip-allowlist        Do not write allowlist file
   --skip-npm-install      Skip npm install for plugins that have package.json
   --prune                 Enable stale plugin pruning (disabled by default)
@@ -21,7 +21,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 SOURCE_DIR="${REPO_ROOT}/interface-plugins"
-DEST_DIR="${HOME}/.commands-agent/interface-plugins"
+DEST_DIR="${HOME}/.commands-com/workspace/interface-plugins"
 ALLOWLIST_PATH=""
 WRITE_ALLOWLIST=1
 INSTALL_DEPS=1

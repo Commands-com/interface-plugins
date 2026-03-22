@@ -22,11 +22,11 @@ cd interface-plugins
 
 This copies plugin folders into:
 
-- `~/.commands-agent/interface-plugins`
+- `~/.commands-com/workspace/interface-plugins`
 
 And writes allowlist file:
 
-- `~/.commands-agent/interface-plugins-allowed.json`
+- `~/.commands-com/workspace/interface-plugins-allowed.json`
 
 ## 3. Restart Commands Desktop
 
@@ -101,7 +101,7 @@ Then restart Commands Desktop.
 
 Why this matters:
 
-- plugin files must be in `~/.commands-agent/interface-plugins`
+- plugin files must be in `~/.commands-com/workspace/interface-plugins`
 - allowlist hash must match current plugin files
 
 ## 8. Validate In-App Behavior Before Publishing

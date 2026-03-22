@@ -9,10 +9,10 @@ Use this file with the reference plugin at `interface-plugins/webhook-echo`.
 - Built-in providers load first (currently includes built-in `slack`).
 - External providers are additive and loaded after built-ins.
 - External providers are loaded from:
-  - default: `~/.commands-agent/interface-plugins`
+  - default: `~/.commands-com/workspace/interface-plugins`
   - override: `COMMANDS_AGENT_INTERFACE_PLUGINS_DIR`
 - Allowlist is loaded from plugin directory parent:
-  - default path: `~/.commands-agent/interface-plugins-allowed.json`
+  - default path: `~/.commands-com/workspace/interface-plugins-allowed.json`
 - No `Commands.app` source modification is required.
 
 ## 2. Required Plugin Files

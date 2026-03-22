@@ -60,8 +60,8 @@ Both scripts copy plugins, install npm dependencies, and generate the SHA-256 al
 
 | Platform | Default install locations |
 |---|---|
-| macOS / Linux | `~/.commands-agent/interface-plugins` |
-| Windows | `%LOCALAPPDATA%\commands-agent\interface-plugins` |
+| macOS / Linux | `~/.commands-com/workspace/interface-plugins` |
+| Windows | `%LOCALAPPDATA%\commands-com\workspace\interface-plugins` |
 
 Restart Commands Desktop.
 
