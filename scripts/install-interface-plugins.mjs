@@ -93,8 +93,7 @@ if (!fs.existsSync(sourceDir)) {
 }
 
 // Skip list for files/dirs that should not be synced
-const SKIP = new Set(['.DS_Store', '.git']);
-const SKIP_WITH_DEPS = new Set(['.DS_Store', '.git', 'node_modules']);
+const SKIP = new Set(['.DS_Store', '.git', 'node_modules']);
 
 /**
  * Recursively sync srcDir -> destDir, deleting files in dest that don't exist in src.
@@ -146,7 +145,7 @@ console.log('Installing interface plugins');
 console.log(`Source: ${sourceDir}`);
 console.log(`Dest:   ${destDir}`);
 
-const skipSet = installDeps ? SKIP_WITH_DEPS : SKIP;
+const skipSet = SKIP;
 const sourcePluginNames = new Set();
 
 const entries = fs.readdirSync(sourceDir, { withFileTypes: true });
@@ -201,7 +200,7 @@ if (prune) {
 if (writeAllowlist) {
   const allowlistScript = path.join(repoRoot, 'scripts', 'generate-interface-allowlist.mjs');
   console.log(`Generating allowlist: ${allowlistPath}`);
-  execFileSync(process.execPath, [allowlistScript, destDir, allowlistPath], {
+  execFileSync(process.execPath, [allowlistScript, '--managed-only', destDir, allowlistPath], {
     stdio: 'inherit',
   });
 }

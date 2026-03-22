@@ -94,12 +94,7 @@ for plugin_path in "${SOURCE_DIR}"/*; do
   echo "[${plugin_name}] syncing"
   mkdir -p "${dest_plugin_path}"
 
-  rsync_excludes=(--exclude '.DS_Store' --exclude '.git')
-  # Only exclude node_modules when we will run npm install afterward;
-  # with --skip-npm-install, preserve vendored node_modules from source.
-  if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
-    rsync_excludes+=(--exclude 'node_modules/')
-  fi
+  rsync_excludes=(--exclude '.DS_Store' --exclude '.git' --exclude 'node_modules/')
 
   rsync -a --delete "${rsync_excludes[@]}" \
     "${plugin_path}/" "${dest_plugin_path}/"
@@ -138,7 +133,7 @@ if [[ "${PRUNE}" -eq 1 ]]; then
 fi
 
 if [[ "${WRITE_ALLOWLIST}" -eq 1 ]]; then
-  node "${REPO_ROOT}/scripts/generate-interface-allowlist.mjs" "${DEST_DIR}" "${ALLOWLIST_PATH}"
+  node "${REPO_ROOT}/scripts/generate-interface-allowlist.mjs" --managed-only "${DEST_DIR}" "${ALLOWLIST_PATH}"
 fi
 
 echo "Done. Restart Commands Desktop to load plugins."
