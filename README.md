@@ -135,4 +135,5 @@ GETTING_STARTED.md                              End-to-end authoring and testing
 ## Additional Docs
 
 - [Getting Started](./GETTING_STARTED.md)
+- [Contributing](./CONTRIBUTING.md)
 - [Interface Contract](./docs/CONTRACT.md)
